@@ -96,6 +96,7 @@
 <div class="screen" id="bottomScreen"></div>
 
 <div class="buttons" id="buttonsContainer">
+  <!-- Number buttons -->
   <button onclick="addChar('1')">1</button>
   <button onclick="addChar('2')">2</button>
   <button onclick="addChar('3')">3</button>
@@ -106,6 +107,18 @@
   <button onclick="addChar('8')">8</button>
   <button onclick="addChar('9')">9</button>
   <button onclick="addChar('0')">0</button>
+
+  <!-- Operation buttons -->
+  <button onclick="addOp('+')">+</button>
+  <button onclick="addOp('-')">-</button>
+  <button onclick="addOp('*')">*</button>
+  <button onclick="addOp('/')">/</button>
+  <button onclick="addOp('**')">^</button>
+  <button onclick="addOp('%')">%</button>
+  <button onclick="addOp('factorial(')">!</button>
+  <button onclick="addOp('summation(')">sum</button>
+
+  <!-- Control buttons -->
   <button onclick="clearEq()">C</button>
   <button onclick="checkEq()">=</button>
   <button onclick="openModal()" style="grid-column: span 4;">Book of Operations</button>
@@ -130,15 +143,15 @@
 
 <script>
 let equation = '';
-let target = Math.floor(Math.random()*20) + 5; // random target 5-24
+let target = Math.floor(Math.random() * 20) + 5;
 const allOps = ['+', '-', '*', '/', '**', '%', '!', 'sum'];
 let allowedOps = [];
 
 function pickAllowedOps() {
   allowedOps = [];
-  while(allowedOps.length < 4) {
-    let op = allOps[Math.floor(Math.random()*allOps.length)];
-    if(!allowedOps.includes(op)) allowedOps.push(op);
+  while (allowedOps.length < 4) {
+    let op = allOps[Math.floor(Math.random() * allOps.length)];
+    if (!allowedOps.includes(op)) allowedOps.push(op);
   }
 }
 pickAllowedOps();
@@ -149,12 +162,19 @@ function updateTopScreen() {
 }
 updateTopScreen();
 
+// Numbers are always allowed
 function addChar(char) {
-  if(allowedOps.includes(char.replace('factorial(','!').replace('summation(','sum'))) {
-    equation += char;
+  equation += char;
+  document.getElementById('bottomScreen').innerText = equation;
+}
+
+// Operation buttons must be in allowedOps
+function addOp(op) {
+  if (allowedOps.includes(op)) {
+    equation += op;
     document.getElementById('bottomScreen').innerText = equation;
   } else {
-    alert('❌ This operation is not allowed in this round!');
+    alert("❌ This operation is not allowed in this round!");
   }
 }
 
@@ -181,26 +201,26 @@ function checkEq() {
   try {
     let result = eval(equation);
 
-    // enforce special operations needing another op
-    let opsCount = (equation.match(/[\+\-\*\/]/g)||[]).length + 
-                   (equation.includes('**')?1:0) + 
-                   (equation.includes('%')?1:0) + 
-                   (equation.includes('sum')?1:0);
+    // Count normal operators
+    let opsCount = (equation.match(/[\+\-\*\/]/g) || []).length +
+                   (equation.includes('**') ? 1 : 0) +
+                   (equation.includes('%') ? 1 : 0) +
+                   (equation.includes('sum') ? 1 : 0);
 
-    if(opsCount < 1) {
+    if (opsCount < 1) {
       alert("❌ Use at least one operation.");
       return;
     }
-    if((equation.includes('**') || equation.includes('%') || equation.includes('sum')) && opsCount < 2) {
+
+    if ((equation.includes('**') || equation.includes('%') || equation.includes('sum')) && opsCount < 2) {
       alert("❌ Exponentiation, modulus, and summation require another operation!");
       return;
     }
 
-    if(result === target) {
+    if (result === target) {
       alert(`✅ Correct! ${equation} = ${result}`);
-      // prepare next round
       equation = '';
-      target = Math.floor(Math.random()*20)+5;
+      target = Math.floor(Math.random() * 20) + 5;
       pickAllowedOps();
       updateTopScreen();
       document.getElementById('bottomScreen').innerText = '';
@@ -212,17 +232,10 @@ function checkEq() {
   }
 }
 
-// Modal functions
-function openModal() {
-  document.getElementById('opModal').style.display = 'block';
-}
-function closeModal() {
-  document.getElementById('opModal').style.display = 'none';
-}
+function openModal() { document.getElementById('opModal').style.display = 'block'; }
+function closeModal() { document.getElementById('opModal').style.display = 'none'; }
 window.onclick = function(event) {
-  if (event.target == document.getElementById('opModal')) {
-    closeModal();
-  }
+  if (event.target == document.getElementById('opModal')) closeModal();
 }
 </script>
 
