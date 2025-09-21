@@ -56,7 +56,6 @@
   button:hover {
     background: #777;
   }
-  /* Modal styling */
   .modal {
     display: none;
     position: fixed;
@@ -93,41 +92,25 @@
   All you were given was a calculator and a book about the operations.
 </div>
 
-<div class="screen" id="topScreen">
-  Target: 10 <br>
-  Allowed ops: + - * / ** % ! sum
-</div>
+<div class="screen" id="topScreen"></div>
 <div class="screen" id="bottomScreen"></div>
 
-<div class="buttons">
+<div class="buttons" id="buttonsContainer">
   <button onclick="addChar('1')">1</button>
   <button onclick="addChar('2')">2</button>
   <button onclick="addChar('3')">3</button>
-  <button onclick="addChar('+')">+</button>
-
   <button onclick="addChar('4')">4</button>
   <button onclick="addChar('5')">5</button>
   <button onclick="addChar('6')">6</button>
-  <button onclick="addChar('-')">-</button>
-
   <button onclick="addChar('7')">7</button>
   <button onclick="addChar('8')">8</button>
   <button onclick="addChar('9')">9</button>
-  <button onclick="addChar('*')">*</button>
-
   <button onclick="addChar('0')">0</button>
-  <button onclick="addChar('/')">/</button>
-  <button onclick="addChar('**')">^</button>
-  <button onclick="addChar('%')">%</button>
-
-  <button onclick="addChar('factorial(')">!</button>
-  <button onclick="addChar('summation(')">sum</button>
   <button onclick="clearEq()">C</button>
   <button onclick="checkEq()">=</button>
   <button onclick="openModal()" style="grid-column: span 4;">Book of Operations</button>
 </div>
 
-<!-- Modal -->
 <div id="opModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal()">&times;</span>
@@ -139,19 +122,40 @@
       <li><b>/</b> Division</li>
       <li><b>**</b> Exponentiation (requires another operation)</li>
       <li><b>%</b> Modulus (requires another equation)</li>
-      <li><b>!</b> Factorial (e.g., 5! = 120)</li>
-      <li><b>sum</b> Summation (e.g., sum(5) = 1+2+3+4+5 = 15)</li>
+      <li><b>!</b> Factorial</li>
+      <li><b>sum</b> Summation</li>
     </ul>
   </div>
 </div>
 
 <script>
 let equation = '';
-const target = 10;
+let target = Math.floor(Math.random()*20) + 5; // random target 5-24
+const allOps = ['+', '-', '*', '/', '**', '%', '!', 'sum'];
+let allowedOps = [];
+
+function pickAllowedOps() {
+  allowedOps = [];
+  while(allowedOps.length < 4) {
+    let op = allOps[Math.floor(Math.random()*allOps.length)];
+    if(!allowedOps.includes(op)) allowedOps.push(op);
+  }
+}
+pickAllowedOps();
+
+function updateTopScreen() {
+  document.getElementById('topScreen').innerHTML = 
+    `Target: ${target} <br>Allowed operations: ${allowedOps.join(' ')}`;
+}
+updateTopScreen();
 
 function addChar(char) {
-  equation += char;
-  document.getElementById('bottomScreen').innerText = equation;
+  if(allowedOps.includes(char.replace('factorial(','!').replace('summation(','sum'))) {
+    equation += char;
+    document.getElementById('bottomScreen').innerText = equation;
+  } else {
+    alert('❌ This operation is not allowed in this round!');
+  }
 }
 
 function clearEq() {
@@ -176,8 +180,30 @@ function summation(n) {
 function checkEq() {
   try {
     let result = eval(equation);
-    if (result === target) {
+
+    // enforce special operations needing another op
+    let opsCount = (equation.match(/[\+\-\*\/]/g)||[]).length + 
+                   (equation.includes('**')?1:0) + 
+                   (equation.includes('%')?1:0) + 
+                   (equation.includes('sum')?1:0);
+
+    if(opsCount < 1) {
+      alert("❌ Use at least one operation.");
+      return;
+    }
+    if((equation.includes('**') || equation.includes('%') || equation.includes('sum')) && opsCount < 2) {
+      alert("❌ Exponentiation, modulus, and summation require another operation!");
+      return;
+    }
+
+    if(result === target) {
       alert(`✅ Correct! ${equation} = ${result}`);
+      // prepare next round
+      equation = '';
+      target = Math.floor(Math.random()*20)+5;
+      pickAllowedOps();
+      updateTopScreen();
+      document.getElementById('bottomScreen').innerText = '';
     } else {
       alert(`❌ Incorrect. ${equation} = ${result}`);
     }
