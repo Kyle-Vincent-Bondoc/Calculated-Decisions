@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Calculated Decisions</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #1e1e1e;
+    color: #f1f1f1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 20px;
+    min-height: 100vh;
+  }
+  h1 {
+    color: #00ffcc;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  #story {
+    width: 400px;
+    background: #222;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 1em;
+    text-align: center;
+  }
+  .screen {
+    width: 350px;
+    background: #333;
+    padding: 15px;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+    text-align: right;
+    border-radius: 8px;
+  }
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 80px);
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  button {
+    padding: 15px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 8px;
+    background: #555;
+    color: #fff;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #777;
+  }
+  /* Modal styling */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.7);
+  }
+  .modal-content {
+    background-color: #222;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #444;
+    width: 400px;
+    color: #fff;
+    border-radius: 8px;
+  }
+  .close {
+    color: #00ffcc;
+    float: right;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<h1>Calculated Decisions</h1>
+
+<div id="story">
+  Complete Mathematical Orders by the constants. You will get paid <b>1 n</b> by the king of constants - <b>Pi</b>.<br>
+  All you were given was a calculator and a book about the operations.
+</div>
+
+<div class="screen" id="topScreen">
+  Target: 10 <br>
+  Allowed ops: + - * / ** % ! sum
+</div>
+<div class="screen" id="bottomScreen"></div>
+
+<div class="buttons">
+  <button onclick="addChar('1')">1</button>
+  <button onclick="addChar('2')">2</button>
+  <button onclick="addChar('3')">3</button>
+  <button onclick="addChar('+')">+</button>
+
+  <button onclick="addChar('4')">4</button>
+  <button onclick="addChar('5')">5</button>
+  <button onclick="addChar('6')">6</button>
+  <button onclick="addChar('-')">-</button>
+
+  <button onclick="addChar('7')">7</button>
+  <button onclick="addChar('8')">8</button>
+  <button onclick="addChar('9')">9</button>
+  <button onclick="addChar('*')">*</button>
+
+  <button onclick="addChar('0')">0</button>
+  <button onclick="addChar('/')">/</button>
+  <button onclick="addChar('**')">^</button>
+  <button onclick="addChar('%')">%</button>
+
+  <button onclick="addChar('factorial(')">!</button>
+  <button onclick="addChar('summation(')">sum</button>
+  <button onclick="clearEq()">C</button>
+  <button onclick="checkEq()">=</button>
+  <button onclick="openModal()">📖 Operations</button>
+</div>
+
+<!-- Modal -->
+<div id="opModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Operation Guide</h2>
+    <ul>
+      <li><b>+</b> Addition</li>
+      <li><b>-</b> Subtraction</li>
+      <li><b>*</b> Multiplication</li>
+      <li><b>/</b> Division</li>
+      <li><b>**</b> Exponentiation (requires another operation)</li>
+      <li><b>%</b> Modulus (requires another equation)</li>
+      <li><b>!</b> Factorial (e.g., 5! = 120)</li>
+      <li><b>sum</b> Summation (e.g., sum(5) = 1+2+3+4+5 = 15)</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+let equation = '';
+const target = 10;
+
+function addChar(char) {
+  equation += char;
+  document.getElementById('bottomScreen').innerText = equation;
+}
+
+function clearEq() {
+  equation = '';
+  document.getElementById('bottomScreen').innerText = '';
+}
+
+function factorial(n) {
+  if (n < 0) return NaN;
+  if (n === 0) return 1;
+  let f = 1;
+  for (let i = 1; i <= n; i++) f *= i;
+  return f;
+}
+
+function summation(n) {
+  let sum = 0;
+  for (let i = 1; i <= n; i++) sum += i;
+  return sum;
+}
+
+function checkEq() {
+  try {
+    let result = eval(equation);
+    if (result === target) {
+      alert(`✅ Correct! ${equation} = ${result}`);
+    } else {
+      alert(`❌ Incorrect. ${equation} = ${result}`);
+    }
+  } catch {
+    alert("❌ Invalid equation!");
+  }
+}
+
+// Modal functions
+function openModal() {
+  document.getElementById('opModal').style.display = 'block';
+}
+function closeModal() {
+  document.getElementById('opModal').style.display = 'none';
+}
+window.onclick = function(event) {
+  if (event.target == document.getElementById('opModal')) {
+    closeModal();
+  }
+}
+</script>
+
+</body>
+</html>
